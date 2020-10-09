@@ -25,9 +25,12 @@ def verify_subnet_mask_format(the_subnet_mask):
     Returns False otherwise.
     '''
     regex_string_subnet_mask_address_format = re.compile(r'^(((128|192|224|240|248|252|254|255|0(?=\.0))\.){3}(128|192|224|240|248|252|254|255|0))$')
-    if regex_string_subnet_mask_address_format.search(the_subnet_mask) is not None:
-        return True
-    return False
+    if regex_string_subnet_mask_address_format.search(the_subnet_mask) is None:
+        return False
+    divided_subnet_mask = the_subnet_mask.split(".")
+    if divided_subnet_mask[0] < divided_subnet_mask[1] or divided_subnet_mask[1] < divided_subnet_mask[2] or divided_subnet_mask[2] < divided_subnet_mask[3]:
+        return False
+    return True
 
 def get_full_subnet_mask(number_of_bits):
     '''
@@ -70,7 +73,21 @@ def get_full_subnet_mask(number_of_bits):
             number_of_bits -= 0
     return full_subnet_mask
 
-
+def apply_mask(ip_address, subnet_mask):
+    '''
+    Returns the subnet given an ip address and subnet mask.
+    '''
+    if verify_ip_address_format and verify_subnet_mask_format:
+        subnet_to_return = ""
+        divided_ip_address = ip_address.split(".")
+        divided_subnet_mask = subnet_mask.split(".")
+        for current_division in range(4):
+            division_to_add = int(divided_ip_address[current_division]) & int(divided_subnet_mask[current_division])
+            subnet_to_return += str(division_to_add)
+            if not current_division == 3:
+                subnet_to_return += "."
+        return subnet_to_return
+    return "invalid entry"
 
 
 
