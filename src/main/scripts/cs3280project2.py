@@ -3,7 +3,6 @@
 Main script that accepts user input and provides methods.
 '''
 
-import re
 import service
 
 def main():

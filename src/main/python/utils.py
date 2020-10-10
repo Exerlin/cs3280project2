@@ -41,7 +41,11 @@ def verify_subnet_mask_format(the_subnet_mask):
     if regex_string_subnet_mask_address_format.search(the_subnet_mask) is None:
         return False
     divided_subnet_mask = the_subnet_mask.split(".")
-    if divided_subnet_mask[0] < divided_subnet_mask[1] or divided_subnet_mask[1] < divided_subnet_mask[2] or divided_subnet_mask[2] < divided_subnet_mask[3]:
+    if divided_subnet_mask[0] < divided_subnet_mask[1]:
+        return False
+    if divided_subnet_mask[1] < divided_subnet_mask[2]:
+        return False
+    if divided_subnet_mask[2] < divided_subnet_mask[3]:
         return False
     return True
 
@@ -56,9 +60,9 @@ def get_full_subnet_mask(number_of_bits):
         return False
     full_subnet_mask = ""
     for current_division in range(4):
-        if not full_subnet_mask == "":
+        if full_subnet_mask != "":
             full_subnet_mask += "."
-            
+
         if number_of_bits > 7:
             full_subnet_mask += "255"
             number_of_bits -= 8
@@ -98,7 +102,9 @@ def apply_mask(ip_address, subnet_mask):
         divided_ip_address = ip_address.split(".")
         divided_subnet_mask = subnet_mask.split(".")
         for current_division in range(4):
-            division_to_add = int(divided_ip_address[current_division]) & int(divided_subnet_mask[current_division])
+            ip_to_add = int(divided_ip_address[current_division])
+            subnet_to_add = int(divided_subnet_mask[current_division])
+            division_to_add = ip_to_add & subnet_to_add
             subnet_to_return += str(division_to_add)
             if not current_division == 3:
                 subnet_to_return += "."
@@ -147,10 +153,10 @@ def grab_ip_address(resource):
     grab_ip_address(resource) that returns a string
     Returns the ip address string given the resource.
     '''
-    regex_grab_IP = re.compile(r'(?<=\?)[\d.]{7,15}')
-    if regex_grab_IP.search(resource) is None:
+    regex_grab_ip = re.compile(r'(?<=\?)[\d.]{7,15}')
+    if regex_grab_ip.search(resource) is None:
         return '-1'
-    return regex_grab_IP.search(resource).group()
+    return regex_grab_ip.search(resource).group()
 
 def grab_query(resource):
     '''
@@ -164,8 +170,3 @@ def grab_query(resource):
     if is_subnet_mask_in_bit_format(subnet):
         return grab_ip_address(resource) + '&' + get_full_subnet_mask(subnet)
     return regex_resource_string.search(resource).group()
-
-
-    
-
-    
